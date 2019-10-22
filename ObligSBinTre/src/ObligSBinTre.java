@@ -5,9 +5,22 @@ import java.util.*;
 public class ObligSBinTre<T> implements Beholder<T>
 {
 
-  ObligSBinTre<String> test=new ObligSBinTre(Comparator.naturalOrder());
-  ObligSBinTre<Integer> test2=new ObligSBinTre(Comparator.naturalOrder());
-  ObligSBinTre<Double> test3=new ObligSBinTre(Comparator.naturalOrder());
+
+
+  public static void main (String[] args){
+    Integer[] a = {4,7,2,9,4,10,8,7,4,6};
+    ObligSBinTre<Integer> tre =new ObligSBinTre<>(Comparator.naturalOrder());
+
+  for(int verdi : a){
+    tre.leggInn(verdi);
+  }
+    System.out.println(tre.antall());// Utskrift: 10
+    System.out.println(tre.antall(5));// Utskrift: 10
+    System.out.println(tre.antall(4));// Utskrift: 10
+    System.out.println(tre.antall(7));// Utskrift: 10
+    System.out.println(tre.antall(10));// Utskrift: 10
+
+  }
 
 
 
@@ -112,7 +125,24 @@ public class ObligSBinTre<T> implements Beholder<T>
   
   public int antall(T verdi)
   {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+   int forekomst=0;
+    if (verdi == null) throw new NullPointerException();
+
+    Node<T> p = rot;
+
+    while (p!=null){
+      int cmp = comp.compare(verdi, p.verdi);
+      if (cmp==0){
+        forekomst++;
+        p=p.høyre;
+      }
+      else if(cmp<0) p=p.venstre;
+      else if (cmp>0) p=p.høyre;
+    }
+
+
+    return forekomst;
+
   }
   
   @Override
