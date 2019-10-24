@@ -8,17 +8,25 @@ public class ObligSBinTre<T> implements Beholder<T>
 
 
   public static void main (String[] args){
-    Integer[] a = {4,7,2,9,4,10,8,7,4,6};
+   // Integer[] a = {4,7,2,9,4,10,8,7,4,6};
+    Integer[] a={10,5,4,2,1,3,8,9,7,15,13,11,14,17};
     ObligSBinTre<Integer> tre =new ObligSBinTre<>(Comparator.naturalOrder());
+
 
   for(int verdi : a){
     tre.leggInn(verdi);
   }
-    System.out.println(tre.antall());// Utskrift: 10
-    System.out.println(tre.antall(5));// Utskrift: 10
-    System.out.println(tre.antall(4));// Utskrift: 10
-    System.out.println(tre.antall(7));// Utskrift: 10
-    System.out.println(tre.antall(10));// Utskrift: 10
+  System.out.println("first verdi"+tre.toString());
+
+    System.out.println("Verdi"+tre.rot.venstre.høyre.høyre);
+    System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.høyre.høyre).verdi);
+
+    System.out.println("Verdi"+tre.rot.venstre.høyre);
+    System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.høyre).verdi);
+
+    System.out.println("Verdi"+tre.rot.høyre.høyre);
+   // System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.høyre.høyre).verdi);
+
 
   }
 
@@ -78,7 +86,7 @@ public class ObligSBinTre<T> implements Beholder<T>
 
     // p er nå null, dvs. ute av treet, q er den siste vi passerte
 
-    p = new Node<T>(verdi, null);                   // oppretter en ny node
+    p = new Node<T>(verdi, q);                   // oppretter en ny node
 
     if (q == null) rot = p;                  // p blir rotnode
     else if (cmp < 0) q.venstre = p;         // venstre barn til q
@@ -159,13 +167,73 @@ public class ObligSBinTre<T> implements Beholder<T>
   
   private static <T> Node<T> nesteInorden(Node<T> p)
   {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+
+
+    int cmp=0;
+    Node<T> neste=null;
+    if (p.høyre!=null){
+       neste=p.høyre;
+      // System.out.println(1);
+    }
+    else{
+      neste=p;
+    //  System.out.println(2);
+    }
+    // p.høyre == null og p == venstrebarn ==== så neste == forelder
+    if (p.høyre==null && p.forelder.venstre.equals(p)){
+      neste=p.forelder;
+//7      System.out.println(3);
+      return neste;
+    }
+
+    //
+
+
+    // hvis man må langt opp i treet hh
+  // loop oppover til forelder med differanse
+    if (p.høyre!=null){
+      if (p.høyre.venstre==null){
+        // System.out.println(4);
+        return p.høyre;
+      }
+    }
+// if bare venstre, og siste har null forelder
+
+// hvis foreldrene bare er høyre så er det siste
+
+
+   else{
+     while(p.forelder.høyre.equals((p))){
+       p=p.forelder;
+     }
+
+     return p.forelder;
+    }
+
+    return null;
   }
   
   @Override
   public String toString()
   {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+    StringBuilder sb=new StringBuilder();
+    if (rot==null){
+      sb.append("[]");
+      return sb.toString();
+    }
+
+    sb.append("[");
+   Node<T> first=rot;
+   while (first.venstre!=null){
+     first=first.venstre;
+   }
+
+   while (nesteInorden(first)!=null){
+     sb.append(nesteInorden(first)+", ");
+     first=nesteInorden(first);
+   }
+   sb.append("]");
+return sb.toString();
   }
   
   public String omvendtString()
