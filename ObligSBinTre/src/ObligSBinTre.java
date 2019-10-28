@@ -16,15 +16,17 @@ public class ObligSBinTre<T> implements Beholder<T>
   for(int verdi : a){
     tre.leggInn(verdi);
   }
-  System.out.println("first verdi"+tre.toString());
+ System.out.println("first verdi"+tre.toString());
 
-    System.out.println("Verdi"+tre.rot.venstre.høyre.høyre);
-    System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.høyre.høyre).verdi);
+    //.out.println("Verdi"+tre.rot.venstre);
+    //System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre).verdi);
+  /*  System.out.println("Verdi"+tre.rot.venstre.venstre.venstre.høyre.verdi);
+    System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.venstre.venstre.høyre).verdi);
 
     System.out.println("Verdi"+tre.rot.venstre.høyre);
     System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.høyre).verdi);
 
-    System.out.println("Verdi"+tre.rot.høyre.høyre);
+    System.out.println("Verdi"+tre.rot.høyre.høyre);*/
    // System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.høyre.høyre).verdi);
 
 
@@ -199,18 +201,41 @@ public class ObligSBinTre<T> implements Beholder<T>
     }
 // if bare venstre, og siste har null forelder
 
-// hvis foreldrene bare er høyre så er det siste
 
 
-   else{
-     while(p.forelder.høyre.equals((p))){
+   else if (p.forelder.høyre.equals(p)) {
+     while(p.forelder.høyre!= null && p.forelder.høyre.equals((p))){
        p=p.forelder;
      }
 
      return p.forelder;
     }
+    // hvis foreldrene bare er høyre-barn fram til root så er det siste
+    // koden under er drit sketchy Jon, ikke døm meg
+   else{
+      while (p.forelder.høyre.equals(p)){
+        if (p.forelder==null){
+          while (p.høyre!=null){
+            p=p.høyre;
+          }
+          return p;
+        }
+        p=p.forelder;
+      }
+    }
 
-    return null;
+   // motsatt av over, gå nedover så lagnt som mulig
+    p=p.høyre;
+
+   while (p.venstre!=null){
+     p=p.venstre;
+   }
+  return p;
+
+
+
+    //System.out.println("returner null");
+ //   return null;
   }
   
   @Override
@@ -230,6 +255,8 @@ public class ObligSBinTre<T> implements Beholder<T>
 
    while (nesteInorden(first)!=null){
      sb.append(nesteInorden(first)+", ");
+     System.out.println(first.verdi);
+    // System.out.println(nesteInorden(first).verdi);
      first=nesteInorden(first);
    }
    sb.append("]");
