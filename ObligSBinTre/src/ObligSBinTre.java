@@ -16,9 +16,12 @@ public class ObligSBinTre<T> implements Beholder<T>
       // TODO: feil på 5
       int[] b = {5, 4, 3, 2, 1};
       for (int k : b) tre.leggInn(k);
+      int k = 4;
+      tre.fjern(k);
+      //System.out.println("");
 
 
- System.out.println(tre.toString());
+ //System.out.println(tre.toString());
 
 
     //.out.println("Verdi"+tre.rot.venstre);
@@ -73,7 +76,8 @@ public class ObligSBinTre<T> implements Beholder<T>
     antall = 0;
     comp = c;
   }
-  
+
+  //////////////////////////// OPPGAVE 1 //////////////////////////////////
   @Override
   public final boolean leggInn(T verdi)    // skal ligge i class SBinTre
   {
@@ -119,16 +123,61 @@ public class ObligSBinTre<T> implements Beholder<T>
 
     return false;
   }
-  
+
+  ////////////////////////////// OPPGAVE 5 ////////////////////////////////
   @Override
   public boolean fjern(T verdi)
   {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+
+      if (verdi == null) return false;  // treet har ingen nullverdier
+
+      Node<T> p = rot, forelder = null;   // forelder skal være forelder til p
+
+      while (p != null)            // leter etter verdi
+      {
+          int cmp = comp.compare(verdi,p.verdi);      // sammenligner
+          if (cmp < 0) { forelder = p; p = p.venstre; }      // går til venstre
+          else if (cmp > 0) { forelder = p; p = p.høyre; }   // går til høyre
+          else break;    // den søkte verdien ligger i p
+      }
+      if (p == null) return false;   // finner ikke verdi
+
+      if (p.venstre == null || p.høyre == null)  // Tilfelle 1) og 2)
+      {
+          Node<T> b = p.venstre != null ? p.venstre : p.høyre;  // b for barn
+          if (p == rot) rot = b;
+          else if (p == forelder.venstre) forelder.venstre = b;
+          else forelder.høyre = b;
+      }
+      else  // Tilfelle 3)
+      {
+          Node<T> forelder2 = p, r = p.høyre;   // finner neste i inorden
+          while (r.venstre != null)
+          {
+              forelder2 = r;    // s er forelder til r
+              r = r.venstre;
+          }
+
+          p.verdi = r.verdi;   // kopierer verdien i r til p
+
+          if (forelder2 != p) forelder2.venstre = r.høyre;
+          else forelder2.høyre = r.høyre;
+      }
+
+      antall--;   // det er nå én node mindre i treet
+      return true;
   }
-  
+
+  /////////////////////// OPPGAVE 5 ///////////////////////////////////
   public int fjernAlle(T verdi)
   {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+      int atnallVerdier = 0;
+      while (inneholder(verdi)){
+          fjern(verdi);
+          atnallVerdier++;
+      }
+      return atnallVerdier;
+
   }
   
   @Override
@@ -136,7 +185,8 @@ public class ObligSBinTre<T> implements Beholder<T>
   {
     return antall;
   }
-  
+
+    //////////////////////////// OPPGAVE 2 //////////////////////////////////
   public int antall(T verdi)
   {
    int forekomst=0;
@@ -170,7 +220,8 @@ public class ObligSBinTre<T> implements Beholder<T>
   {
     throw new UnsupportedOperationException("Ikke kodet ennå!");
   }
-  
+
+    //////////////////////////// OPPGAVE 3 //////////////////////////////////
   private static <T> Node<T> nesteInorden(Node<T> p)
   {
 
@@ -263,7 +314,8 @@ return p;
     //System.out.println("returner null");
  //   return null;
   }
-  
+
+    //////////////////////////// OPPGAVE 3 //////////////////////////////////
   @Override
   public String toString()
   {
