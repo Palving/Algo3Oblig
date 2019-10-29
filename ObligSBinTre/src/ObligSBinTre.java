@@ -9,23 +9,31 @@ public class ObligSBinTre<T> implements Beholder<T>
 
   public static void main (String[] args){
    // Integer[] a = {4,7,2,9,4,10,8,7,4,6};
-    Integer[] a={10,5,4,2,1,3,8,9,7,15,13,11,14,17};
-    ObligSBinTre<Integer> tre =new ObligSBinTre<>(Comparator.naturalOrder());
+  //  Integer[] a={10,5,4,2,1,3,8,9,7,15,13,11,14,17,18,16,19};
 
 
-  for(int verdi : a){
-    tre.leggInn(verdi);
-  }
-  System.out.println("first verdi"+tre.toString());
+      ObligSBinTre<Integer> tre =new ObligSBinTre<>(Comparator.naturalOrder());
+      // TODO: feil på 5
+      int[] b = {5, 4, 3, 2, 1};
+      for (int k : b) tre.leggInn(k);
+      int k = 4;
+      tre.fjern(k);
+      //System.out.println("");
 
-    System.out.println("Verdi"+tre.rot.venstre.høyre.høyre);
-    System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.høyre.høyre).verdi);
+
+ //System.out.println(tre.toString());
+
+
+    //.out.println("Verdi"+tre.rot.venstre);
+    //System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre).verdi);
+  /*  System.out.println("Verdi"+tre.rot.venstre.venstre.venstre.høyre.verdi);
+    System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.venstre.venstre.høyre).verdi);
 
     System.out.println("Verdi"+tre.rot.venstre.høyre);
     System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.høyre).verdi);
 
-    System.out.println("Verdi"+tre.rot);
-    System.out.println("Neste inorden"+tre.nesteInorden(tre.rot).verdi);
+    System.out.println("Verdi"+tre.rot.høyre.høyre);*/
+   // System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.høyre.høyre).verdi);
 
 
   }
@@ -68,7 +76,8 @@ public class ObligSBinTre<T> implements Beholder<T>
     antall = 0;
     comp = c;
   }
-  
+
+  //////////////////////////// OPPGAVE 1 //////////////////////////////////
   @Override
   public final boolean leggInn(T verdi)    // skal ligge i class SBinTre
   {
@@ -93,6 +102,7 @@ public class ObligSBinTre<T> implements Beholder<T>
     else q.høyre = p;                        // høyre barn til q
 
     antall++;                                // én verdi mer i treet
+     // System.out.println("verdi"+verdi+"lagt inn");
     return true;                             // vellykket innlegging
   }
   
@@ -113,16 +123,61 @@ public class ObligSBinTre<T> implements Beholder<T>
 
     return false;
   }
-  
+
+  ////////////////////////////// OPPGAVE 5 ////////////////////////////////
   @Override
   public boolean fjern(T verdi)
   {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+
+      if (verdi == null) return false;  // treet har ingen nullverdier
+
+      Node<T> p = rot, forelder = null;   // forelder skal være forelder til p
+
+      while (p != null)            // leter etter verdi
+      {
+          int cmp = comp.compare(verdi,p.verdi);      // sammenligner
+          if (cmp < 0) { forelder = p; p = p.venstre; }      // går til venstre
+          else if (cmp > 0) { forelder = p; p = p.høyre; }   // går til høyre
+          else break;    // den søkte verdien ligger i p
+      }
+      if (p == null) return false;   // finner ikke verdi
+
+      if (p.venstre == null || p.høyre == null)  // Tilfelle 1) og 2)
+      {
+          Node<T> b = p.venstre != null ? p.venstre : p.høyre;  // b for barn
+          if (p == rot) rot = b;
+          else if (p == forelder.venstre) forelder.venstre = b;
+          else forelder.høyre = b;
+      }
+      else  // Tilfelle 3)
+      {
+          Node<T> forelder2 = p, r = p.høyre;   // finner neste i inorden
+          while (r.venstre != null)
+          {
+              forelder2 = r;    // s er forelder til r
+              r = r.venstre;
+          }
+
+          p.verdi = r.verdi;   // kopierer verdien i r til p
+
+          if (forelder2 != p) forelder2.venstre = r.høyre;
+          else forelder2.høyre = r.høyre;
+      }
+
+      antall--;   // det er nå én node mindre i treet
+      return true;
   }
-  
+
+  /////////////////////// OPPGAVE 5 ///////////////////////////////////
   public int fjernAlle(T verdi)
   {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+      int atnallVerdier = 0;
+      while (inneholder(verdi)){
+          fjern(verdi);
+          atnallVerdier++;
+      }
+      return atnallVerdier;
+
   }
   
   @Override
@@ -130,7 +185,8 @@ public class ObligSBinTre<T> implements Beholder<T>
   {
     return antall;
   }
-  
+
+    //////////////////////////// OPPGAVE 2 //////////////////////////////////
   public int antall(T verdi)
   {
    int forekomst=0;
@@ -164,13 +220,22 @@ public class ObligSBinTre<T> implements Beholder<T>
   {
     throw new UnsupportedOperationException("Ikke kodet ennå!");
   }
-  
+
+    //////////////////////////// OPPGAVE 3 //////////////////////////////////
   private static <T> Node<T> nesteInorden(Node<T> p)
   {
 
 
     int cmp=0;
     Node<T> neste=null;
+
+    // bare en node
+      if (p.høyre==null && p.venstre==null && p.forelder==null){
+
+          return p;
+      }
+
+
     if (p.høyre!=null){
        neste=p.høyre;
       // System.out.println(1);
@@ -180,7 +245,7 @@ public class ObligSBinTre<T> implements Beholder<T>
     //  System.out.println(2);
     }
     // p.høyre == null og p == venstrebarn ==== så neste == forelder
-    if (p.høyre==null && p.forelder.venstre.equals(p)){
+    if (p.forelder!=null && p.forelder.venstre!=null && p.høyre==null && p.forelder.venstre.equals(p)){
       neste=p.forelder;
 //7      System.out.println(3);
       return neste;
@@ -188,28 +253,69 @@ public class ObligSBinTre<T> implements Beholder<T>
 
     //
 
-  // hvis ikke noe mer på venstre i noden
+
+    // hvis man må langt opp i treet hh
+
     if (p.høyre!=null){
       if (p.høyre.venstre==null){
         // System.out.println(4);
+
         return p.høyre;
+
       }
     }
 // if bare venstre, og siste har null forelder
 
-// hvis foreldrene bare er høyre så er det siste
 
-   else{
-     while(p.forelder.høyre.equals((p))){
+
+   else if (p.forelder!=null && p.forelder.høyre!=null && p.forelder.høyre.equals(p)) {
+     while(p.forelder!=null && p.forelder.høyre!= null && p.forelder.høyre.equals((p))){
        p=p.forelder;
-     }
 
+     }
+        System.out.print("hvordan kommer rot-noden her "+p);
      return p.forelder;
     }
+    // hvis foreldrene bare er høyre-barn fram til root så er det siste
+    // koden under er drit sketchy Jon, ikke døm meg
+    // blir aldri kalt på heller tydeligvis
+   else{
+       // opp til rot
+        System.out.print("ppp"+p);
+        if (p.forelder!=null){
+            while (p.forelder!=null){
+                p=p.forelder;
+            }
 
-    return null;
+        }
+        // også nedover
+        if (p.høyre==null){
+            System.out.print("ppp"+p);
+            return p;
+        }
+        while (p.høyre!=null){
+            p=p.høyre;
+        }
+        System.out.print("ppp"+p);
+return p;
+    }
+
+   // motsatt av over, gå nedover så lagnt som mulig
+    p=p.høyre;
+
+   while (p.venstre!=null){
+     p=p.venstre;
+   }
+
+  return p;
+
+
+
+    //System.out.println("returner null");
+ //   return null;
   }
-  
+
+    //////////////////////////// OPPGAVE 3 //////////////////////////////////
   @Override
   public String toString()
   {
@@ -225,8 +331,24 @@ public class ObligSBinTre<T> implements Beholder<T>
      first=first.venstre;
    }
 
+   if (first.forelder==null && first.høyre==null && first.venstre==null){
+       sb=new StringBuilder();
+       sb.append("["+first.verdi+"]");
+       return sb.toString();
+   }
+    //sb.append(first.verdi);
+      //TODO: JOOOOOOOOOOOOOOOOOOOON jeg mister det
 
+  // sb.append(first+", ");
+   while (nesteInorden(first)!=null){
+     sb.append(first.verdi+", ");
 
+    // System.out.println(nesteInorden(first).verdi);
+     first=nesteInorden(first);
+   }
+    sb.append(first);
+  // sb.deleteCharAt(sb.length()-1);
+   //sb.deleteCharAt(sb.length()-1);
    sb.append("]");
 return sb.toString();
   }
