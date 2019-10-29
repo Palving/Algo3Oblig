@@ -129,42 +129,56 @@ public class ObligSBinTre<T> implements Beholder<T>
   public boolean fjern(T verdi)
   {
 
-      if (verdi == null) return false;  // treet har ingen nullverdier
+      if(verdi == null) return false;
 
-      Node<T> p = rot, forelder = null;   // forelder skal være forelder til p
+      Node<T> p = rot;
 
-      while (p != null)            // leter etter verdi
-      {
-          int cmp = comp.compare(verdi,p.verdi);      // sammenligner
-          if (cmp < 0) { forelder = p; p = p.venstre; }      // går til venstre
-          else if (cmp > 0) { forelder = p; p = p.høyre; }   // går til høyre
-          else break;    // den søkte verdien ligger i p
+      while(p!=null){
+          int cmp = comp.compare(verdi,p.verdi);
+
+          if(cmp < 0) p=p.venstre;
+          else if(cmp > 0) p=p.høyre;
+          else break;
       }
-      if (p == null) return false;   // finner ikke verdi
 
-      if (p.venstre == null || p.høyre == null)  // Tilfelle 1) og 2)
-      {
-          Node<T> b = p.venstre != null ? p.venstre : p.høyre;  // b for barn
-          if (p == rot) rot = b;
-          else if (p == forelder.venstre) forelder.venstre = b;
-          else forelder.høyre = b;
-      }
-      else  // Tilfelle 3)
-      {
-          Node<T> forelder2 = p, r = p.høyre;   // finner neste i inorden
-          while (r.venstre != null)
-          {
-              forelder2 = r;    // s er forelder til r
-              r = r.venstre;
+      if (p==null) return false;
+
+      if (p.venstre==null || p.høyre==null) {
+
+          Node<T> b = (p.venstre!=null) ? p.venstre : p.høyre;
+
+          if (p == rot) {
+              rot =  b;
+              if(b!=null) b.forelder=null;
           }
+          else if (p==p.forelder.venstre) {
+              if(b!=null)b.forelder = p.forelder;
+              p.forelder.venstre = b;
+          } else {
 
-          p.verdi = r.verdi;   // kopierer verdien i r til p
+              if(b!=null)b.forelder = p.forelder;
+              p.forelder.høyre = b;
+          }
+      }
+      else {
 
-          if (forelder2 != p) forelder2.venstre = r.høyre;
-          else forelder2.høyre = r.høyre;
+          Node<T> r = p.høyre;
+          while (r.venstre != null) r = r.venstre;
+          p.verdi = r.verdi;
+
+          if(r.forelder!=p) {
+              Node<T> q = r.forelder;
+              q.venstre = r.høyre;
+              if(q.venstre!=null)q.venstre.forelder = q;
+          }
+          else{
+              p.høyre =  r.høyre;
+              if(p.høyre !=null) p.høyre.forelder = p;
+
+          }
       }
 
-      antall--;   // det er nå én node mindre i treet
+      antall--;
       return true;
   }
 
@@ -248,171 +262,177 @@ public class ObligSBinTre<T> implements Beholder<T>
   {
 
 
-    int cmp=0;
-    Node<T> neste=null;
+      int cmp=0;
+      Node<T> neste=null;
 
-    // bare en node
+      // bare en node
       if (p.høyre==null && p.venstre==null && p.forelder==null){
 
           return p;
       }
 
 
-    if (p.høyre!=null){
-       neste=p.høyre;
-      // System.out.println(1);
-    }
-    else{
-      neste=p;
-    //  System.out.println(2);
-    }
-    // p.høyre == null og p == venstrebarn ==== så neste == forelder
-    if (p.forelder!=null && p.forelder.venstre!=null && p.høyre==null && p.forelder.venstre.equals(p)){
-      neste=p.forelder;
-//7      System.out.println(3);
-      return neste;
-    }
-
-    //
-
-
-    // hvis man må langt opp i treet hh
-
-    if (p.høyre!=null){
-      if (p.høyre.venstre==null){
-        // System.out.println(4);
-
-        return p.høyre;
-
+      if (p.høyre!=null){
+          neste=p.høyre;
+          // System.out.println(1);
       }
-    }
+      else{
+          neste=p;
+          //  System.out.println(2);
+      }
+      // p.høyre == null og p == venstrebarn ==== så neste == forelder
+      if (p.forelder!=null && p.forelder.venstre!=null && p.høyre==null && p.forelder.venstre.equals(p)){
+          neste=p.forelder;
+//7      System.out.println(3);
+
+          return neste;
+      }
+
+      //
+
+
+      // hvis man må langt opp i treet hh
+
+      if (p.høyre!=null){
+          if (p.høyre.venstre==null){
+              // System.out.println(4);
+
+              return p.høyre;
+
+          }
+      }
 // if bare venstre, og siste har null forelder
 
 
 
-   else if (p.forelder!=null && p.forelder.høyre!=null && p.forelder.høyre.equals(p)) {
-     while(p.forelder!=null && p.forelder.høyre!= null && p.forelder.høyre.equals((p))){
-       p=p.forelder;
+      else if (p.forelder!=null && p.forelder.høyre!=null && p.forelder.høyre.equals(p)) {
+          while(p.forelder!=null && p.forelder.høyre!= null && p.forelder.høyre.equals((p))){
+              p=p.forelder;
 
-     }
-        System.out.print("hvordan kommer rot-noden her "+p);
-     return p.forelder;
-    }
-    // hvis foreldrene bare er høyre-barn fram til root så er det siste
-    // koden under er drit sketchy Jon, ikke døm meg
-    // blir aldri kalt på heller tydeligvis
-   else{
-       // opp til rot
-        System.out.print("ppp"+p);
-        if (p.forelder!=null){
-            while (p.forelder!=null){
-                p=p.forelder;
-            }
+          }
 
-        }
-        // også nedover
-        if (p.høyre==null){
-            System.out.print("ppp"+p);
-            return p;
-        }
-        while (p.høyre!=null){
-            p=p.høyre;
-        }
-        System.out.print("ppp"+p);
-return p;
-    }
-
-   // motsatt av over, gå nedover så lagnt som mulig
-    p=p.høyre;
-
-   while (p.venstre!=null){
-     p=p.venstre;
-   }
-
-  return p;
+          return p.forelder;
+      }
+      // hvis foreldrene bare er høyre-barn fram til root så er det siste
+      // koden under er drit sketchy Jon, ikke døm meg
+      // blir aldri kalt på heller tydeligvis
+      else{
+          // opp til rot
+          if (p.forelder==null && p.høyre==null){
+              return null;
+          }
 
 
+          if (p.forelder!=null){
+              while (p.forelder!=null){
+                  p=p.forelder;
 
-    //System.out.println("returner null");
- //   return null;
+              }
+
+          }
+          // også nedover
+          if (p.høyre==null){
+
+              return p;
+          }
+          while (p.høyre!=null){
+              p=p.høyre;
+          }
+
+          return p;
+      }
+
+      // motsatt av over, gå nedover så lagnt som mulig
+      p=p.høyre;
+
+      while (p.venstre!=null){
+          p=p.venstre;
+      }
+
+      return p;
+
+
+
+      //System.out.println("returner null");
+      //   return null;
   }
 
     //////////////////////////// OPPGAVE 3 //////////////////////////////////
   @Override
   public String toString()
   {
-    StringBuilder sb=new StringBuilder();
-    if (rot==null){
-      sb.append("[]");
-      return sb.toString();
-    }
+      StringBuilder sb=new StringBuilder();
+      if (rot==null){
+          sb.append("[]");
+          return sb.toString();
+      }
 
-    sb.append("[");
-   Node<T> first=rot;
-   while (first.venstre!=null){
-     first=first.venstre;
-   }
+      sb.append("[");
+      Node<T> first=rot;
+      while (first.venstre!=null){
+          first=first.venstre;
+      }
 
-   if (first.forelder==null && first.høyre==null && first.venstre==null){
-       sb=new StringBuilder();
-       sb.append("["+first.verdi+"]");
-       return sb.toString();
-   }
-    //sb.append(first.verdi);
+      if (first.forelder==null && first.høyre==null && first.venstre==null){
+          sb=new StringBuilder();
+          sb.append("["+first.verdi+"]");
+          return sb.toString();
+      }
+      //sb.append(first.verdi);
       //TODO: JOOOOOOOOOOOOOOOOOOOON jeg mister det
 
-  // sb.append(first+", ");
-   while (nesteInorden(first)!=null){
-     sb.append(first.verdi+", ");
+      // sb.append(first+", ");
+      while (nesteInorden(first)!=null){
 
-    // System.out.println(nesteInorden(first).verdi);
-     first=nesteInorden(first);
-   }
-    sb.append(first);
-  // sb.deleteCharAt(sb.length()-1);
-   //sb.deleteCharAt(sb.length()-1);
-   sb.append("]");
-return sb.toString();
+          sb.append(first.verdi+", ");
+          first=nesteInorden(first);
+      }
+      sb.append(first);
+      // sb.deleteCharAt(sb.length()-1);
+      //sb.deleteCharAt(sb.length()-1);
+      sb.append("]");
+      return sb.toString();
   }
   
   public String omvendtString()
   {
-   TabellStakk<T> stack=new TabellStakk<>();
+      TabellStakk<T> stack=new TabellStakk<>();
 
-    if (rot==null){
-     return "[]";
-    }
+      if (rot==null){
+          return "[]";
+      }
 
 
-    Node<T> first=rot;
-    while (first.venstre!=null){
-      first=first.venstre;
-    }
+      Node<T> first=rot;
+      while (first.venstre!=null){
+          first=first.venstre;
+      }
 
-    if (first.forelder==null && first.høyre==null && first.venstre==null){
-    return "["+rot.verdi+"]";
-    }
-    //sb.append(first.verdi);
-    //TODO: JOOOOOOOOOOOOOOOOOOOON jeg mister det
+      if (first.forelder==null && first.høyre==null && first.venstre==null){
+          return "["+rot.verdi+"]";
+      }
+      //sb.append(first.verdi);
+      //TODO: JOOOOOOOOOOOOOOOOOOOON jeg mister det
 
-    // sb.append(first+", ");
-    while (nesteInorden(first)!=null){
+      // sb.append(first+", ");
+      while (nesteInorden(first)!=null){
 
-     stack.leggInn(first.verdi);
-      first=nesteInorden(first);
-    }
-    stack.leggInn(first.verdi);
+          stack.leggInn(first.verdi);
+          first=nesteInorden(first);
+      }
+      stack.leggInn(first.verdi);
 
-    StringBuilder sb=new StringBuilder();
-    sb.append("[");
+      StringBuilder sb=new StringBuilder();
+      sb.append("[");
 
-    while (!stack.tom()){
-      sb.append(stack.taUt()+", ");
-    }
-    sb.deleteCharAt(sb.length()-1);
-    sb.deleteCharAt(sb.length()-1);
-sb.append("]");
-    return sb.toString();
+      while (!stack.tom()){
+          sb.append(stack.taUt()+", ");
+      }
+      sb.deleteCharAt(sb.length()-1);
+      sb.deleteCharAt(sb.length()-1);
+      sb.append("]");
+      return sb.toString();
+
 
   }
   
