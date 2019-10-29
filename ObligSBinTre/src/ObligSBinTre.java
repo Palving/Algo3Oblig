@@ -24,8 +24,8 @@ public class ObligSBinTre<T> implements Beholder<T>
     System.out.println("Verdi"+tre.rot.venstre.høyre);
     System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.høyre).verdi);
 
-    System.out.println("Verdi"+tre.rot.høyre.høyre);
-   // System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.høyre.høyre).verdi);
+    System.out.println("Verdi"+tre.rot);
+    System.out.println("Neste inorden"+tre.nesteInorden(tre.rot).verdi);
 
 
   }
@@ -188,9 +188,7 @@ public class ObligSBinTre<T> implements Beholder<T>
 
     //
 
-
-    // hvis man må langt opp i treet hh
-  // loop oppover til forelder med differanse
+  // hvis ikke noe mer på venstre i noden
     if (p.høyre!=null){
       if (p.høyre.venstre==null){
         // System.out.println(4);
@@ -200,7 +198,6 @@ public class ObligSBinTre<T> implements Beholder<T>
 // if bare venstre, og siste har null forelder
 
 // hvis foreldrene bare er høyre så er det siste
-
 
    else{
      while(p.forelder.høyre.equals((p))){
@@ -228,10 +225,8 @@ public class ObligSBinTre<T> implements Beholder<T>
      first=first.venstre;
    }
 
-   while (nesteInorden(first)!=null){
-     sb.append(nesteInorden(first)+", ");
-     first=nesteInorden(first);
-   }
+
+
    sb.append("]");
 return sb.toString();
   }
