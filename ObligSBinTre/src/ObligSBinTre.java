@@ -17,11 +17,11 @@ public class ObligSBinTre<T> implements Beholder<T>
       int[] b = {5, 4, 3, 2, 1};
       for (int k : b) tre.leggInn(k);
       int k = 4;
-      tre.fjern(k);
+     // tre.fjern(k);
       //System.out.println("");
 
-
- //System.out.println(tre.toString());
+System.out.println(tre.toString());
+ System.out.println(tre.omvendtString());
 
 
     //.out.println("Verdi"+tre.rot.venstre);
@@ -248,6 +248,7 @@ public class ObligSBinTre<T> implements Beholder<T>
     if (p.forelder!=null && p.forelder.venstre!=null && p.høyre==null && p.forelder.venstre.equals(p)){
       neste=p.forelder;
 //7      System.out.println(3);
+
       return neste;
     }
 
@@ -273,7 +274,7 @@ public class ObligSBinTre<T> implements Beholder<T>
        p=p.forelder;
 
      }
-        System.out.print("hvordan kommer rot-noden her "+p);
+
      return p.forelder;
     }
     // hvis foreldrene bare er høyre-barn fram til root så er det siste
@@ -281,22 +282,27 @@ public class ObligSBinTre<T> implements Beholder<T>
     // blir aldri kalt på heller tydeligvis
    else{
        // opp til rot
-        System.out.print("ppp"+p);
+        if (p.forelder==null && p.høyre==null){
+         return null;
+        }
+
+
         if (p.forelder!=null){
             while (p.forelder!=null){
                 p=p.forelder;
+
             }
 
         }
         // også nedover
         if (p.høyre==null){
-            System.out.print("ppp"+p);
+
             return p;
         }
         while (p.høyre!=null){
             p=p.høyre;
         }
-        System.out.print("ppp"+p);
+
 return p;
     }
 
@@ -341,9 +347,8 @@ return p;
 
   // sb.append(first+", ");
    while (nesteInorden(first)!=null){
-     sb.append(first.verdi+", ");
 
-    // System.out.println(nesteInorden(first).verdi);
+     sb.append(first.verdi+", ");
      first=nesteInorden(first);
    }
     sb.append(first);
@@ -355,7 +360,43 @@ return sb.toString();
   
   public String omvendtString()
   {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+   TabellStakk<T> stack=new TabellStakk<>();
+
+    if (rot==null){
+     return "[]";
+    }
+
+
+    Node<T> first=rot;
+    while (first.venstre!=null){
+      first=first.venstre;
+    }
+
+    if (first.forelder==null && first.høyre==null && first.venstre==null){
+    return "["+rot.verdi+"]";
+    }
+    //sb.append(first.verdi);
+    //TODO: JOOOOOOOOOOOOOOOOOOOON jeg mister det
+
+    // sb.append(first+", ");
+    while (nesteInorden(first)!=null){
+
+     stack.leggInn(first.verdi);
+      first=nesteInorden(first);
+    }
+    stack.leggInn(first.verdi);
+
+    StringBuilder sb=new StringBuilder();
+    sb.append("[");
+
+    while (!stack.tom()){
+      sb.append(stack.taUt()+", ");
+    }
+    sb.deleteCharAt(sb.length()-1);
+    sb.deleteCharAt(sb.length()-1);
+sb.append("]");
+    return sb.toString();
+
   }
   
   public String høyreGren()
