@@ -1,6 +1,8 @@
 ////////////////// ObligSBinTre /////////////////////////////////
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Objects;
 
 public class ObligSBinTre<T> implements Beholder<T>
 {
@@ -9,16 +11,16 @@ public class ObligSBinTre<T> implements Beholder<T>
 
   public static void main (String[] args){
    // Integer[] a = {4,7,2,9,4,10,8,7,4,6};
-  //  Integer[] a={10,5,4,2,1,3,8,9,7,15,13,11,14,17,18,16,19};
+
+      Integer[] a={10,5,4,2,1,3,8,9,7,15,13,11,14,17,18,16,19,20};
 
 
       ObligSBinTre<Integer> tre =new ObligSBinTre<>(Comparator.naturalOrder());
-      // TODO: feil på 5
-      int[] b = {5, 4, 3, 2, 1};
-      for (int k : b) tre.leggInn(k);
-      int k = 4;
-      tre.fjern(k);
-      //System.out.println("");
+      // TODO: feil på 5,
+    //  int[] b = {5, 4, 3, 2, 1};
+      for (int k : a) tre.leggInn(k);
+
+      System.out.println(tre.lengstGren());
 
 
  //System.out.println(tre.toString());
@@ -402,7 +404,6 @@ public class ObligSBinTre<T> implements Beholder<T>
           return "[]";
       }
 
-
       Node<T> first=rot;
       while (first.venstre!=null){
           first=first.venstre;
@@ -411,10 +412,7 @@ public class ObligSBinTre<T> implements Beholder<T>
       if (first.forelder==null && first.høyre==null && first.venstre==null){
           return "["+rot.verdi+"]";
       }
-      //sb.append(first.verdi);
-      //TODO: JOOOOOOOOOOOOOOOOOOOON jeg mister det
 
-      // sb.append(first+", ");
       while (nesteInorden(first)!=null){
 
           stack.leggInn(first.verdi);
@@ -461,9 +459,65 @@ public class ObligSBinTre<T> implements Beholder<T>
 
   }
   
-  public String lengstGren()
-  {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+  public String lengstGren() {
+
+      // while neste inorden er blad node, loop opp til root og tell antall loops
+      Node<T> first = rot;
+
+      while (first.venstre != null) {
+          first = first.venstre;
+      }
+
+      // first = starter på første inorden
+
+      StringBuilder grenToCmp=new StringBuilder();
+      StringBuilder gren=new StringBuilder();
+      int antall = 0;
+      int antallToCmp = 0;
+      Node<T> neste = first;
+      while (neste.forelder != null) {
+          gren.append(neste.verdi+", ");
+
+          antall++;
+          neste = neste.forelder;
+      }
+        Node<T> blad;
+
+
+      while (nesteInorden(neste)!=null){
+          // finn neste bladnode
+          if (nesteInorden(neste).venstre==null && nesteInorden(neste).høyre==null){
+              // funnet bladnode
+              // tell antall steg opp til root
+              blad=nesteInorden(neste);
+            antallToCmp=0;
+            grenToCmp=new StringBuilder();
+
+
+
+              while(blad.forelder!=null){
+                  antallToCmp++;
+
+                  grenToCmp.append(blad.verdi+", ");
+
+                  blad=blad.forelder;
+              }
+              if (antallToCmp>antall){
+                 gren=grenToCmp;
+
+
+              }
+
+          }
+          else{
+              // neste er nesteinorden
+             // neste=nesteInorden(neste);
+          }
+          neste=nesteInorden(neste);
+      }
+gren.append(rot+"]");
+  return gren.toString();
+
   }
   
   public String[] grener()
