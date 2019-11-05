@@ -3,6 +3,7 @@
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Stack;
 
 public class ObligSBinTre<T> implements Beholder<T>
 {
@@ -15,13 +16,17 @@ public class ObligSBinTre<T> implements Beholder<T>
       Integer[] a={10,5,4,2,1,3,8,9,7,15,13,11,14,17,18,16,19,20};
 
 
-      ObligSBinTre<Integer> tre =new ObligSBinTre<>(Comparator.naturalOrder());
+      ObligSBinTre<Character> tre =new ObligSBinTre<>(Comparator.naturalOrder());
       // TODO: feil på 5,
     //  int[] b = {5, 4, 3, 2, 1};
-      for (int k : a) tre.leggInn(k);
+     // for (int k : a) tre.leggInn(k);
 
-      System.out.println(tre.lengstGren());
+     // System.out.println(tre.postString());
 
+  char[] verdier ="IATBHJCRSOFELKGDMPQN".toCharArray();
+  for (char c : verdier) tre.leggInn((Character)c);
+
+      for (Character c : tre) System.out.print(c+" ");
 
  //System.out.println(tre.toString());
 
@@ -547,12 +552,72 @@ gren.insert(0,"["+rot+", ");
   
   public String bladnodeverdier()
   {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+      if (rot==null){
+          return "[]";
+      }
+   StringBuilder sb=new StringBuilder("[");
+
+        bladnodeverdi(rot,sb);
+        sb.deleteCharAt(sb.length()-1);
+      sb.deleteCharAt(sb.length()-1);
+        sb.append("]");
+        return sb.toString();
+
+
+  }
+
+  private void bladnodeverdi(Node<T> node, StringBuilder sb) {
+   if (node==null){
+       return;
+   }
+
+if (node.venstre==null && node.høyre==null){
+    sb.append(node.verdi+", ");
+}
+
+bladnodeverdi(node.venstre, sb);
+bladnodeverdi(node.høyre,sb);
+
+
   }
   
   public String postString()
   {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+
+StringBuilder ut=new StringBuilder();
+boolean ok=true;
+Node first=rot;
+
+if (rot==null) return "[]";
+if (first.høyre==null && first.venstre==null)
+{
+    return "["+first+"]";
+}
+    //TabellStakk stack=new TabellStakk();
+    Stack<Node> stack=new Stack();
+
+while (true){
+while (rot!=null) {
+    stack.push(rot);
+    stack.push(rot);
+    rot = rot.venstre;
+}
+if (stack.empty()){
+    ut.deleteCharAt((ut.length())-1);
+    ut.deleteCharAt((ut.length())-1);
+    return "["+ut.toString()+"]";
+}
+rot=stack.pop();
+if (!stack.empty() && stack.peek() == rot) rot=rot.høyre;
+
+else{
+  //  System.out.println(rot.verdi); rot=null;
+   // System.out.println(rot.verdi);
+   ut.append(rot.verdi+", "); rot = null;
+    }
+
+      }
+      //return ut.toString();
   }
   
   @Override
@@ -569,7 +634,9 @@ gren.insert(0,"["+rot+", ");
     
     private BladnodeIterator()  // konstruktør
     {
-      throw new UnsupportedOperationException("Ikke kodet ennå!");
+        while (p.venstre!=null){
+            p=p.venstre;
+        }
     }
     
     @Override
@@ -581,7 +648,15 @@ gren.insert(0,"["+rot+", ");
     @Override
     public T next()
     {
-      throw new UnsupportedOperationException("Ikke kodet ennå!");
+       p=nesteInorden(p);
+     while (nesteInorden(p)!=null){
+        // System.out.println("evig");
+         if (p.venstre==null && p.høyre==null){
+             return (T) p.verdi;
+         }
+         p=nesteInorden(p);
+     }
+        return (T) p.verdi;
     }
     
     @Override
