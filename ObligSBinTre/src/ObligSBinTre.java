@@ -15,12 +15,25 @@ public class ObligSBinTre<T> implements Beholder<T>
       Integer[] a={10,5,4,2,1,3,8,9,7,15,13,11,14,17,18,16,19,20};
 
 
+
+
+
       ObligSBinTre<Integer> tre =new ObligSBinTre<>(Comparator.naturalOrder());
+  /*    tre.leggInn(4);
+      tre.leggInn(3);
+      tre.leggInn(2);
+      tre.leggInn(1);*/
       // TODO: feil på 5,
     //  int[] b = {5, 4, 3, 2, 1};
-      for (int k : a) tre.leggInn(k);
+     for (int k : a) tre.leggInn(k);
 
-      System.out.println(tre.lengstGren());
+   //   System.out.println(tre.lengstGren());
+      String[] grener=tre.grener();
+
+
+      for (String g : grener) System.out.println(g);
+
+
 
 
  //System.out.println(tre.toString());
@@ -461,6 +474,14 @@ public class ObligSBinTre<T> implements Beholder<T>
   
   public String lengstGren() {
 
+      if (rot==null){
+          return "[]";
+      }
+
+      if (rot.høyre==null && rot.venstre==null){
+          return "["+rot+"]";
+      }
+
       // while neste inorden er blad node, loop opp til root og tell antall loops
       Node<T> first = rot;
 
@@ -476,7 +497,7 @@ public class ObligSBinTre<T> implements Beholder<T>
       int antallToCmp = 0;
       Node<T> neste = first;
       while (neste.forelder != null) {
-          gren.append(neste.verdi+", ");
+          gren.insert(0,neste.verdi+", ");
 
           antall++;
           neste = neste.forelder;
@@ -498,7 +519,8 @@ public class ObligSBinTre<T> implements Beholder<T>
               while(blad.forelder!=null){
                   antallToCmp++;
 
-                  grenToCmp.append(blad.verdi+", ");
+               //   grenToCmp.append(blad.verdi+", ");
+                  grenToCmp.insert(0,blad.verdi+", ");
 
                   blad=blad.forelder;
               }
@@ -515,14 +537,111 @@ public class ObligSBinTre<T> implements Beholder<T>
           }
           neste=nesteInorden(neste);
       }
-gren.append(rot+"]");
+
+gren.insert(0,"["+rot.verdi+", ");
+      gren.deleteCharAt(gren.length()-1);
+      gren.deleteCharAt(gren.length()-1);
+      gren.append("]");
   return gren.toString();
 
   }
   
   public String[] grener()
   {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+    //  String[] tabell=new String[1];
+
+      if (rot==null){
+        return null;
+
+      }
+
+      String[] tabell=new String[1];
+      if (rot.høyre==null && rot.venstre==null){
+          tabell[0]="[["+rot+"]}";
+          return tabell;
+      }
+
+      // while neste inorden er blad node, loop opp til root og tell antall loops
+      Node<T> first = rot;
+
+      while (first.venstre != null) {
+          first = first.venstre;
+      }
+
+      // first = starter på første inorden
+
+
+      StringBuilder gren=new StringBuilder();
+      int indeks = 0;
+      int antallGrener=0;
+      Node<T> neste = first;
+
+
+
+      Node<T> blad;
+
+
+      while (nesteInorden(neste)!=null) {
+       // finn antall bladnoder
+          if (nesteInorden(neste).venstre == null && nesteInorden(neste).høyre == null) {
+              // funnet bladnode
+
+            //  blad = nesteInorden(neste);
+             antallGrener++;
+
+          }
+          neste = nesteInorden(neste);
+      }
+
+      tabell=new String[antallGrener+1];
+   // System.out.println("antall grener"+antallGrener);
+      // første gren
+      neste=first;
+      while (neste.forelder != null) {
+          gren.insert(0,neste.verdi+", ");
+
+          neste = neste.forelder;
+      }
+      //int teller=1;
+      gren.insert(0,"["+rot.verdi+", ");
+      gren.deleteCharAt(gren.length()-1);
+      gren.deleteCharAt(gren.length()-1);
+      gren.append("]");
+
+      tabell[indeks]=gren.toString();
+      indeks++;
+
+      neste=first;
+
+      while (nesteInorden(neste)!=null) {
+          // finn neste bladnode
+          if (nesteInorden(neste).venstre == null && nesteInorden(neste).høyre == null) {
+              // funnet bladnode
+              gren=new StringBuilder();
+
+              blad = nesteInorden(neste);
+
+              while(blad.forelder!=null) {
+                  gren.insert(0, blad.verdi + ", ");
+                  blad=blad.forelder;
+              }
+             // teller++;
+              gren.insert(0,"["+rot.verdi+", ");
+              gren.deleteCharAt(gren.length()-1);
+              gren.deleteCharAt(gren.length()-1);
+              gren.append("]");
+
+              tabell[indeks]=gren.toString();
+              indeks++;
+
+          }
+
+         // System.out.println(teller);
+          neste = nesteInorden(neste);
+      }
+
+      return tabell;
+
   }
   
   public String bladnodeverdier()
