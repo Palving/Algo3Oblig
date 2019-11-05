@@ -1,9 +1,6 @@
 ////////////////// ObligSBinTre /////////////////////////////////
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Stack;
+import java.util.*;
 
 public class ObligSBinTre<T> implements Beholder<T>
 {
@@ -13,11 +10,12 @@ public class ObligSBinTre<T> implements Beholder<T>
   public static void main (String[] args){
    // Integer[] a = {4,7,2,9,4,10,8,7,4,6};
 
-      Integer[] a={10,5,4,2,1,3,8,9,7,15,13,11,14,17,18,16,19,20};
+    //  Integer[] a={10,5,4,2,1,3,8,9,7,15,13,11,14,17,18,16,19,20};
 
 
       ObligSBinTre<Character> tre =new ObligSBinTre<>(Comparator.naturalOrder());
-      // TODO: feil på 5,
+
+
     //  int[] b = {5, 4, 3, 2, 1};
      // for (int k : a) tre.leggInn(k);
 
@@ -547,16 +545,15 @@ gren.insert(0,"["+rot+", ");
   
   public String[] grener()
   {
-    //  String[] tabell=new String[1];
+      String[] tabell=new String[0];
 
       if (rot==null){
-        return null;
-
+        return tabell;
       }
 
-      String[] tabell=new String[1];
+       tabell=new String[1];
       if (rot.høyre==null && rot.venstre==null){
-          tabell[0]="[["+rot+"]}";
+          tabell[0]="["+rot+"]";
           return tabell;
       }
 
@@ -575,10 +572,7 @@ gren.insert(0,"["+rot+", ");
       int antallGrener=0;
       Node<T> neste = first;
 
-
-
       Node<T> blad;
-
 
       while (nesteInorden(neste)!=null) {
        // finn antall bladnoder
@@ -592,7 +586,7 @@ gren.insert(0,"["+rot+", ");
           neste = nesteInorden(neste);
       }
 
-      tabell=new String[antallGrener+1];
+      tabell=new String[antallGrener];
    // System.out.println("antall grener"+antallGrener);
       // første gren
       neste=first;
@@ -612,6 +606,7 @@ gren.insert(0,"["+rot+", ");
 
       neste=first;
 
+
       while (nesteInorden(neste)!=null) {
           // finn neste bladnode
           if (nesteInorden(neste).venstre == null && nesteInorden(neste).høyre == null) {
@@ -630,7 +625,7 @@ gren.insert(0,"["+rot+", ");
               gren.deleteCharAt(gren.length()-1);
               gren.append("]");
 
-              tabell[indeks]=gren.toString();
+              tabell[indeks-1]=gren.toString();
               indeks++;
 
           }
@@ -741,15 +736,18 @@ else{
     @Override
     public T next()
     {
+
        p=nesteInorden(p);
      while (nesteInorden(p)!=null){
         // System.out.println("evig");
          if (p.venstre==null && p.høyre==null){
              return (T) p.verdi;
          }
+
          p=nesteInorden(p);
      }
-        return (T) p.verdi;
+    throw new NoSuchElementException("Ikke flere noder igjen");
+
     }
     
     @Override
