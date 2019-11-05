@@ -262,8 +262,6 @@ public class ObligSBinTre<T> implements Beholder<T>
     //////////////////////////// OPPGAVE 3 //////////////////////////////////
   private static <T> Node<T> nesteInorden(Node<T> p)
   {
-
-
       int cmp=0;
       Node<T> neste=null;
 
@@ -464,6 +462,10 @@ public class ObligSBinTre<T> implements Beholder<T>
       // while neste inorden er blad node, loop opp til root og tell antall loops
       Node<T> first = rot;
 
+      if (rot==null){
+          return "[]";
+      }
+
       while (first.venstre != null) {
           first = first.venstre;
       }
@@ -475,14 +477,27 @@ public class ObligSBinTre<T> implements Beholder<T>
       int antall = 0;
       int antallToCmp = 0;
       Node<T> neste = first;
-      while (neste.forelder != null) {
-          gren.append(neste.verdi+", ");
 
+      while (neste.forelder != null) {
+       //   gren.append(neste.verdi+", ");
+             gren.insert(0,neste.verdi+", ");
           antall++;
           neste = neste.forelder;
       }
+
+
+      //System.out.print("første"+neste);
         Node<T> blad;
 
+      if (rot.høyre==null){
+          gren.insert(0,rot.verdi+", ");
+          gren.deleteCharAt(gren.length()-1);
+          gren.deleteCharAt(gren.length()-1);
+          gren.insert(0,"[");
+          gren.append("]");
+
+          return gren.toString();
+      }
 
       while (nesteInorden(neste)!=null){
           // finn neste bladnode
@@ -498,11 +513,13 @@ public class ObligSBinTre<T> implements Beholder<T>
               while(blad.forelder!=null){
                   antallToCmp++;
 
-                  grenToCmp.append(blad.verdi+", ");
-
+                 // grenToCmp.append(blad.verdi+", ");
+                    grenToCmp.insert(0,blad.verdi+", ");
                   blad=blad.forelder;
               }
               if (antallToCmp>antall){
+                  //System.out.println(grenToCmp+"antall="+antallToCmp);
+                  antall=antallToCmp;
                  gren=grenToCmp;
 
 
@@ -515,7 +532,10 @@ public class ObligSBinTre<T> implements Beholder<T>
           }
           neste=nesteInorden(neste);
       }
-gren.append(rot+"]");
+      gren.deleteCharAt(gren.length()-1);
+      gren.deleteCharAt(gren.length()-1);
+gren.insert(0,"["+rot+", ");
+      gren.append("]");
   return gren.toString();
 
   }
