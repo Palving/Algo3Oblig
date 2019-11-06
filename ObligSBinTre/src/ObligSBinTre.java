@@ -1,4 +1,6 @@
 ////////////////// ObligSBinTre /////////////////////////////////
+//Magnus Palving Christiansen - s326302 Mats Grøsvik - s331405 Jon Rafoss - s331379
+
 
 import java.util.*;
 
@@ -8,7 +10,7 @@ public class ObligSBinTre<T> implements Beholder<T>
 
 
   public static void main (String[] args){
-   
+
   }
 
 
