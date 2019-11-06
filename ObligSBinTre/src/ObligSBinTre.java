@@ -459,7 +459,9 @@ public class ObligSBinTre<T> implements Beholder<T>
       return ut.toString();
 
   }
-  
+
+
+  /////////////////////////////// OPPGAVE 6 /////////////////////////
   public String lengstGren() {
 
       // while neste inorden er blad node, loop opp til root og tell antall loops
@@ -542,7 +544,8 @@ gren.insert(0,"["+rot+", ");
   return gren.toString();
 
   }
-  
+
+  /////////////////////////////// OPPGAVE 7 ////////////////////////////////////
   public String[] grener()
   {
       String[] tabell=new String[0];
@@ -637,7 +640,8 @@ gren.insert(0,"["+rot+", ");
       return tabell;
 
   }
-  
+
+  ///////////////////////////////// OPPGAVE 8a ///////////////////////////
   public String bladnodeverdier()
   {
       if (rot==null){
@@ -653,6 +657,7 @@ gren.insert(0,"["+rot+", ");
 
 
   }
+
 
   private void bladnodeverdi(Node<T> node, StringBuilder sb) {
    if (node==null){
@@ -708,54 +713,91 @@ else{
       //return ut.toString();
   }
   
-  @Override
-  public Iterator<T> iterator()
-  {
-    return new BladnodeIterator();
-  }
-  
-  private class BladnodeIterator implements Iterator<T>
-  {
-    private Node<T> p = rot, q = null;
-    private boolean removeOK = false;
-    private int iteratorendringer = endringer;
-    
-    private BladnodeIterator()  // konstruktør
-    {
-        while (p.venstre!=null){
-            p=p.venstre;
-        }
-    }
-    
-    @Override
-    public boolean hasNext()
-    {
-      return p != null;  // Denne skal ikke endres!
-    }
-    
-    @Override
-    public T next()
-    {
+ 
+ @Override
+ public Iterator<T> iterator()
+ {
+     return new BladnodeIterator();
+ }
 
-       p=nesteInorden(p);
-     while (nesteInorden(p)!=null){
-        // System.out.println("evig");
-         if (p.venstre==null && p.høyre==null){
-             return (T) p.verdi;
+ private class BladnodeIterator implements Iterator<T>
+ {
+     private Node<T> p = rot, q = null;
+     private boolean removeOK = false;
+     private int iteratorendringer = endringer;
+
+     private BladnodeIterator()  // konstruktør
+     {
+         if (p == null)
+         {
+             return;
          }
 
-         p=nesteInorden(p);
+         while (true)
+         {
+             if (p.venstre != null)
+             {
+                 p = p.venstre;
+             }
+             else if (p.høyre != null)
+             {
+                 p = p.høyre;
+             }
+             else
+             {
+                 break;  // p er en bladnode
+             }
+         }
      }
-    throw new NoSuchElementException("Ikke flere noder igjen");
 
-    }
-    
-    @Override
-    public void remove()
-    {
-      throw new UnsupportedOperationException("Ikke kodet ennå!");
-    }
+     @Override
+     public boolean hasNext()
+     {
+         return p != null;
+     }
 
-  } // BladnodeIterator
+     @Override
+     public T next()
+     {
+         if (!hasNext())
+         {
+             throw new NoSuchElementException("Ikke flere verdier!");
+         }
+
+         removeOK = true;
+
+         q = p;
+
+         while (true)
+         {
+             p = nesteInorden(p);
+             if (p == null || (p.venstre == null && p.høyre == null))
+             {
+                 break;
+             }
+         }
+
+         return q.verdi;
+     }
+
+     @Override
+     public void remove() {
+         if (!removeOK) throw new IllegalStateException("Ulovlig tilstand!");
+         else if (endringer != iteratorendringer) throw new ConcurrentModificationException("");
+         removeOK = false;
+
+         if (antall == 1) {
+             q = p = null;
+         } else {
+             if (q.forelder.venstre == q) q.forelder.venstre = null;
+             else q.forelder.høyre = null;
+         }
+
+         antall--;
+         endringer++;
+         iteratorendringer++;
+     }
+
+ } // BladnodeIterator
 
 } // ObligSBinTre
