@@ -8,39 +8,7 @@ public class ObligSBinTre<T> implements Beholder<T>
 
 
   public static void main (String[] args){
-   // Integer[] a = {4,7,2,9,4,10,8,7,4,6};
-
-    //  Integer[] a={10,5,4,2,1,3,8,9,7,15,13,11,14,17,18,16,19,20};
-
-
-      ObligSBinTre<Character> tre =new ObligSBinTre<>(Comparator.naturalOrder());
-
-
-    //  int[] b = {5, 4, 3, 2, 1};
-     // for (int k : a) tre.leggInn(k);
-
-     // System.out.println(tre.postString());
-
-  char[] verdier ="IATBHJCRSOFELKGDMPQN".toCharArray();
-  for (char c : verdier) tre.leggInn((Character)c);
-
-      for (Character c : tre) System.out.print(c+" ");
-
- //System.out.println(tre.toString());
-
-
-    //.out.println("Verdi"+tre.rot.venstre);
-    //System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre).verdi);
-  /*  System.out.println("Verdi"+tre.rot.venstre.venstre.venstre.høyre.verdi);
-    System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.venstre.venstre.høyre).verdi);
-
-    System.out.println("Verdi"+tre.rot.venstre.høyre);
-    System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.høyre).verdi);
-
-    System.out.println("Verdi"+tre.rot.høyre.høyre);*/
-   // System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.høyre.høyre).verdi);
-
-
+   
   }
 
 
