@@ -76,7 +76,8 @@ public class ObligSBinTre<T> implements Beholder<T>
     else if (cmp < 0) q.venstre = p;         // venstre barn til q
     else q.høyre = p;                        // høyre barn til q
 
-    antall++;                                // én verdi mer i treet
+    antall++;
+    endringer++;// én verdi mer i treet
      // System.out.println("verdi"+verdi+"lagt inn");
     return true;                             // vellykket innlegging
   }
@@ -152,8 +153,8 @@ public class ObligSBinTre<T> implements Beholder<T>
 
           }
       }
-
-      antall--;
+        endringer++;
+          antall--;
       return true;
   }
 
@@ -647,40 +648,30 @@ bladnodeverdi(node.høyre,sb);
   public String postString()
   {
 
-StringBuilder ut=new StringBuilder();
-boolean ok=true;
-Node first=rot;
-
-if (rot==null) return "[]";
-if (first.høyre==null && first.venstre==null)
-{
-    return "["+first+"]";
-}
-    //TabellStakk stack=new TabellStakk();
-    Stack<Node> stack=new Stack();
-
-while (true){
-while (rot!=null) {
-    stack.push(rot);
-    stack.push(rot);
-    rot = rot.venstre;
-}
-if (stack.empty()){
-    ut.deleteCharAt((ut.length())-1);
-    ut.deleteCharAt((ut.length())-1);
-    return "["+ut.toString()+"]";
-}
-rot=stack.pop();
-if (!stack.empty() && stack.peek() == rot) rot=rot.høyre;
-
-else{
-  //  System.out.println(rot.verdi); rot=null;
-   // System.out.println(rot.verdi);
-   ut.append(rot.verdi+", "); rot = null;
-    }
-
+      if (tom()){
+          return "[]";
       }
-      //return ut.toString();
+
+      StringJoiner ut = new StringJoiner(", ", "[", "]");
+      Node<T> p = førsteBladnode(rot);
+
+      while (true){
+          ut.add(p.verdi.toString());
+
+          if (p.forelder == null){
+              break;
+          }
+
+          Node<T> n = p.forelder;
+
+          if (p == n.høyre || n.høyre == null){
+              p = n;
+          }
+          else{
+              p = førsteBladnode(n.høyre);
+          }
+      }
+      return ut.toString();
   }
   
 
@@ -689,7 +680,28 @@ else{
  {
      return new BladnodeIterator();
  }
+    private static <T> Node<T> førsteBladnode(Node<T> p)
+    {
+        while (true)
+        {
+            if (p.venstre != null) p = p.venstre;
+            else if (p.høyre != null) p = p.høyre;
+            else return p;
+        }
+    }
 
+    private static <T> Node<T> nesteBladnode(Node<T> p)
+    {
+        Node<T> f = p.forelder;  // går først oppover
+        while (f != null && (p == f.høyre || f.høyre == null))
+        {
+            p = f;
+
+            f = f.forelder;
+        }
+
+        return f == null ? null : førsteBladnode(f.høyre);
+    }
  private class BladnodeIterator implements Iterator<T>
  {
      private Node<T> p = rot, q = null;
@@ -698,26 +710,12 @@ else{
 
      private BladnodeIterator()  // konstruktør
      {
-         if (p == null)
-         {
-             return;
-         }
+         if (tom()) return;
+         p = førsteBladnode(rot);  // bruker en hjelpemetode
+         q = null;
+         removeOK = false;
+         iteratorendringer = endringer;
 
-         while (true)
-         {
-             if (p.venstre != null)
-             {
-                 p = p.venstre;
-             }
-             else if (p.høyre != null)
-             {
-                 p = p.høyre;
-             }
-             else
-             {
-                 break;  // p er en bladnode
-             }
-         }
      }
 
      @Override
@@ -729,40 +727,31 @@ else{
      @Override
      public T next()
      {
-         if (!hasNext())
-         {
-             throw new NoSuchElementException("Ikke flere verdier!");
-         }
-
+         if (!hasNext()) throw new NoSuchElementException("Ikke flere bladnoder!");
+         if (endringer != iteratorendringer) throw new
+                 ConcurrentModificationException("Ulovlig tilstand");
          removeOK = true;
-
-         q = p;
-
-         while (true)
-         {
-             p = nesteInorden(p);
-             if (p == null || (p.venstre == null && p.høyre == null))
-             {
-                 break;
-             }
-         }
-
+         q = p; p = nesteBladnode(p);
          return q.verdi;
      }
 
      @Override
      public void remove() {
-         if (!removeOK) throw new IllegalStateException("Ulovlig tilstand!");
-         else if (endringer != iteratorendringer) throw new ConcurrentModificationException("");
-         removeOK = false;
-
-         if (antall == 1) {
-             q = p = null;
-         } else {
-             if (q.forelder.venstre == q) q.forelder.venstre = null;
-             else q.forelder.høyre = null;
+         if (!removeOK) {
+             throw new IllegalStateException("Ulovlig tilstand!");
          }
+         removeOK = false;
+         Node<T> p = q.forelder;
 
+         if (p == null){
+             rot = null;
+         }
+         else if (q == p.venstre){
+             p.venstre = null;
+         }
+         else {
+             p.høyre = null;
+         }
          antall--;
          endringer++;
          iteratorendringer++;
