@@ -1,9 +1,8 @@
 ////////////////// ObligSBinTre /////////////////////////////////
+//Magnus Palving Christiansen - s326302 Mats Grøsvik - s331405 Jon Rafoss - s331379
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Stack;
+
+import java.util.*;
 
 public class ObligSBinTre<T> implements Beholder<T>
 {
@@ -11,37 +10,6 @@ public class ObligSBinTre<T> implements Beholder<T>
 
 
   public static void main (String[] args){
-   // Integer[] a = {4,7,2,9,4,10,8,7,4,6};
-
-      Integer[] a={10,5,4,2,1,3,8,9,7,15,13,11,14,17,18,16,19,20};
-
-
-      ObligSBinTre<Character> tre =new ObligSBinTre<>(Comparator.naturalOrder());
-      // TODO: feil på 5,
-    //  int[] b = {5, 4, 3, 2, 1};
-     // for (int k : a) tre.leggInn(k);
-
-     // System.out.println(tre.postString());
-
-  char[] verdier ="IATBHJCRSOFELKGDMPQN".toCharArray();
-  for (char c : verdier) tre.leggInn((Character)c);
-
-      for (Character c : tre) System.out.print(c+" ");
-
- //System.out.println(tre.toString());
-
-
-    //.out.println("Verdi"+tre.rot.venstre);
-    //System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre).verdi);
-  /*  System.out.println("Verdi"+tre.rot.venstre.venstre.venstre.høyre.verdi);
-    System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.venstre.venstre.høyre).verdi);
-
-    System.out.println("Verdi"+tre.rot.venstre.høyre);
-    System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.venstre.høyre).verdi);
-
-    System.out.println("Verdi"+tre.rot.høyre.høyre);*/
-   // System.out.println("Neste inorden"+tre.nesteInorden(tre.rot.høyre.høyre).verdi);
-
 
   }
 
@@ -461,7 +429,9 @@ public class ObligSBinTre<T> implements Beholder<T>
       return ut.toString();
 
   }
-  
+
+
+  /////////////////////////////// OPPGAVE 6 /////////////////////////
   public String lengstGren() {
 
       // while neste inorden er blad node, loop opp til root og tell antall loops
@@ -544,12 +514,104 @@ gren.insert(0,"["+rot+", ");
   return gren.toString();
 
   }
-  
+
+  /////////////////////////////// OPPGAVE 7 ////////////////////////////////////
   public String[] grener()
   {
-    throw new UnsupportedOperationException("Ikke kodet ennå!");
+      String[] tabell=new String[0];
+
+      if (rot==null){
+        return tabell;
+      }
+
+       tabell=new String[1];
+      if (rot.høyre==null && rot.venstre==null){
+          tabell[0]="["+rot+"]";
+          return tabell;
+      }
+
+      // while neste inorden er blad node, loop opp til root og tell antall loops
+      Node<T> first = rot;
+
+      while (first.venstre != null) {
+          first = first.venstre;
+      }
+
+      // first = starter på første inorden
+
+
+      StringBuilder gren=new StringBuilder();
+      int indeks = 0;
+      int antallGrener=0;
+      Node<T> neste = first;
+
+      Node<T> blad;
+
+      while (nesteInorden(neste)!=null) {
+       // finn antall bladnoder
+          if (nesteInorden(neste).venstre == null && nesteInorden(neste).høyre == null) {
+              // funnet bladnode
+
+            //  blad = nesteInorden(neste);
+             antallGrener++;
+
+          }
+          neste = nesteInorden(neste);
+      }
+
+      tabell=new String[antallGrener];
+   // System.out.println("antall grener"+antallGrener);
+      // første gren
+      neste=first;
+      while (neste.forelder != null) {
+          gren.insert(0,neste.verdi+", ");
+
+          neste = neste.forelder;
+      }
+      //int teller=1;
+      gren.insert(0,"["+rot.verdi+", ");
+      gren.deleteCharAt(gren.length()-1);
+      gren.deleteCharAt(gren.length()-1);
+      gren.append("]");
+
+      tabell[indeks]=gren.toString();
+      indeks++;
+
+      neste=first;
+
+
+      while (nesteInorden(neste)!=null) {
+          // finn neste bladnode
+          if (nesteInorden(neste).venstre == null && nesteInorden(neste).høyre == null) {
+              // funnet bladnode
+              gren=new StringBuilder();
+
+              blad = nesteInorden(neste);
+
+              while(blad.forelder!=null) {
+                  gren.insert(0, blad.verdi + ", ");
+                  blad=blad.forelder;
+              }
+             // teller++;
+              gren.insert(0,"["+rot.verdi+", ");
+              gren.deleteCharAt(gren.length()-1);
+              gren.deleteCharAt(gren.length()-1);
+              gren.append("]");
+
+              tabell[indeks-1]=gren.toString();
+              indeks++;
+
+          }
+
+         // System.out.println(teller);
+          neste = nesteInorden(neste);
+      }
+
+      return tabell;
+
   }
-  
+
+  ///////////////////////////////// OPPGAVE 8a ///////////////////////////
   public String bladnodeverdier()
   {
       if (rot==null){
@@ -565,6 +627,7 @@ gren.insert(0,"["+rot+", ");
 
 
   }
+
 
   private void bladnodeverdi(Node<T> node, StringBuilder sb) {
    if (node==null){
@@ -620,51 +683,91 @@ else{
       //return ut.toString();
   }
   
-  @Override
-  public Iterator<T> iterator()
-  {
-    return new BladnodeIterator();
-  }
-  
-  private class BladnodeIterator implements Iterator<T>
-  {
-    private Node<T> p = rot, q = null;
-    private boolean removeOK = false;
-    private int iteratorendringer = endringer;
-    
-    private BladnodeIterator()  // konstruktør
-    {
-        while (p.venstre!=null){
-            p=p.venstre;
-        }
-    }
-    
-    @Override
-    public boolean hasNext()
-    {
-      return p != null;  // Denne skal ikke endres!
-    }
-    
-    @Override
-    public T next()
-    {
-       p=nesteInorden(p);
-     while (nesteInorden(p)!=null){
-        // System.out.println("evig");
-         if (p.venstre==null && p.høyre==null){
-             return (T) p.verdi;
-         }
-         p=nesteInorden(p);
-     }
-        return (T) p.verdi;
-    }
-    
-    @Override
-    public void remove()
-    {
-      throw new UnsupportedOperationException("Ikke kodet ennå!");
-    }
 
-  } // BladnodeIterator
+ @Override
+ public Iterator<T> iterator()
+ {
+     return new BladnodeIterator();
+ }
+
+ private class BladnodeIterator implements Iterator<T>
+ {
+     private Node<T> p = rot, q = null;
+     private boolean removeOK = false;
+     private int iteratorendringer = endringer;
+
+     private BladnodeIterator()  // konstruktør
+     {
+         if (p == null)
+         {
+             return;
+         }
+
+         while (true)
+         {
+             if (p.venstre != null)
+             {
+                 p = p.venstre;
+             }
+             else if (p.høyre != null)
+             {
+                 p = p.høyre;
+             }
+             else
+             {
+                 break;  // p er en bladnode
+             }
+         }
+     }
+
+     @Override
+     public boolean hasNext()
+     {
+         return p != null;
+     }
+
+     @Override
+     public T next()
+     {
+         if (!hasNext())
+         {
+             throw new NoSuchElementException("Ikke flere verdier!");
+         }
+
+         removeOK = true;
+
+         q = p;
+
+         while (true)
+         {
+             p = nesteInorden(p);
+             if (p == null || (p.venstre == null && p.høyre == null))
+             {
+                 break;
+             }
+         }
+
+         return q.verdi;
+     }
+
+     @Override
+     public void remove() {
+         if (!removeOK) throw new IllegalStateException("Ulovlig tilstand!");
+         else if (endringer != iteratorendringer) throw new ConcurrentModificationException("");
+         removeOK = false;
+
+         if (antall == 1) {
+             q = p = null;
+         } else {
+             if (q.forelder.venstre == q) q.forelder.venstre = null;
+             else q.forelder.høyre = null;
+         }
+
+         antall--;
+         endringer++;
+         iteratorendringer++;
+     }
+
+ } // BladnodeIterator
 
 } // ObligSBinTre
